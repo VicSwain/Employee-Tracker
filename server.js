@@ -159,18 +159,20 @@ function viewEmployeesByDepartment() {
         inquirer.prompt([
             {
                 type: 'list',
-                name: 'dept_id',
+                name: 'dept_Id',
                 message: 'Which department of employees do you want to see?',
                 choices: departmentChoices,
             },
         ])
-        .then((res) => db.searchEmployeesByDepartment(res.dept_id))
+        .then((res) =>
+        db.searchEmployeesByDepartment(res.dept_id))
         .then(({ rows }) => {
             let employees = rows;
             console.table(employees);
         })
+    
             .then(() => presentFirstPrompt());
-
+    
     });
 }
 
