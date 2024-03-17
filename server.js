@@ -137,17 +137,44 @@ function presentFirstPrompt() {
         }
     });
 };
-
+//View all employees
 function viewEmployees() {
-    db.findAllEmployees()
+    db.searchAllEmployees()
     .then(({ rows }) => {
         let employees = rows;
         console.table(employees);
     })
     .then(() => presentFirstPrompt());
 }
+// View all employees belonging to a department
+function viewEmployeesByDepartment() {
+    db.searchEmployeesByDepartment()
+    .then(({ rows})=> {
+        let departments = rows;
+        const departmentChoices = departments.map(({ id, name }) => ({
+            name: name,
+            value: id,
+        }));
 
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'dept_id',
+                message: 'Which department of employees do you want to see?',
+                choices: departmentChoices,
+            },
+        ])
+        .then((res) => db.searchEmployeesByDepartment(res.dept_id))
+        .then(({ rows }) => {
+            let employees = rows;
+            console.table(employees);
+        })
+            .then(() => presentFirstPrompt());
+
+    });
+}
 
 
 //initilize app
+
 
