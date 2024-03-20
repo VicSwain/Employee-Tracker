@@ -213,7 +213,7 @@ async function addRole() {
     ]); 
     endSection(res);
     await db.createRole(res)
-    .then(() => console.log(`Added ${role.role_name} to database`));
+    .then(() => console.log(`Added ${role_name} to database`));
     await presentFirstPrompt();
     
 }
