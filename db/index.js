@@ -19,12 +19,58 @@ class DB {
     );
   }
   
-  searchEmployeesByDepartment(dept_Id) {
+  searchAllDepartments() {
+    return this.query('SELECT department.id, department.dept_name FROM department;');
+  }
+  
+  searchAllRole() {
+    return this.query('SELECT role.id, role.title, department.dept_name AS department, role.salary FROM role LEFT JOIN department on role.dept_id = department.id;');
+  }
+  
+  searchAllDepartments() {
+    return this.query('SELECT * FROM department;');
+  }
+
+  createDept(department) {
+    return this.query('INSERT INTO department (dept_name) VALUES ($1)', [department.dept_name]);
+  }
+
+  createRole(role) {
+    const { role_name, role_salary, role_dept } = role;
+    console.log(role);
     return this.query(
-        "SELECT employee.id, employee.first_name, employee.last_name, role.title FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department department ON role.dept_id = department.id WHERE department.id = $1;" [dept_Id]        
+      'INSERT INTO role (title, salary, dept_id) VALUES ($1, $2, $3)',
+      [role_name, role_salary, role_dept]
     );
-  }    
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  searchEmployeesByDepartment(dept_Id) {
+    console.log("Searching by department for employees: ",dept_Id)
+    return this.query(
+        "SELECT employee.id, employee.first_name, employee.last_name, role.title FROM employee LEFT JOIN role on employee.role_id = role.id LEFT JOIN department department ON role.dept_id = department.id WHERE department.id = $1;", 
+        [dept_Id]   
+         
+    ); 
+  }   
+
+ 
 }
+ 
+   
 
   module.exports = new DB();
 

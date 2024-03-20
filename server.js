@@ -2,6 +2,8 @@
 const express = require("express");
 const inquirer = require("inquirer");
 const db = require('./db');
+const { start } = require("repl");
+const { log } = require("console");
 const app = express();
 //styling for CLI
 const logoCli = require("cli-logo"),
@@ -12,7 +14,16 @@ logoConfig = {
     type: "Ghost",
     color: "brightMagenta",    
 };
+//initial app
 init();
+// functions for help with console.log 
+function startSection(name){
+    console.log(`================================${name} start =============================`)
+}
+function endSection(name){
+    console.log(`================================${name} end =============================`)
+}
+
 function init() {
     //print CLI logo
     logoCli.print(logoConfig);
@@ -111,16 +122,16 @@ function presentFirstPrompt() {
                 updateEmployeeRole();
                 break;
             case 'VIEW_DEPARTMENT':
-                viewDepartment();
+                viewAllDept();
                 break;
             case 'ADD_DEPARTMENT':
-                addDepartment();
+                addDept();
                 break;
             case 'DELETE_DEPARTMENT':
                 deleteDepartment();
                 break;
             case 'VIEW_ROLE':
-                viewRole();
+                 viewAllRole();
                 break;
             case 'ADD_ROLE':
                 addRole();
@@ -137,44 +148,183 @@ function presentFirstPrompt() {
         }
     });
 };
-//View all employees
-function viewEmployees() {
-    db.searchAllEmployees()
-    .then(({ rows }) => {
-        let employees = rows;
-        console.table(employees);
-    })
-    .then(() => presentFirstPrompt());
+
+// async function to view all departments
+async function viewAllDept() {
+    const deptData = await db.searchAllDepartments()
+    let departments = deptData.rows;
+    console.table(departments);
+    presentFirstPrompt()
 }
+// async function to see all employees
+async function viewEmployees() {
+    const employeeData = await db.searchAllEmployees()
+    let employees = employeeData.rows;
+    console.table(employees)   
+    presentFirstPrompt()
+}
+//async function to see all roles
+async function viewAllRole() {
+    const roleData = await db.searchAllRole()
+    let roles = roleData.rows;
+    console.table(roles)
+    presentFirstPrompt()
+}
+
+async function addDept() {
+     const res = await inquirer.prompt([
+        {
+            name: 'dept_name',
+            message: 'What is the name of the new department?'
+        },
+    ]);
+   let deptRes = res;
+    await db.createDept(deptRes)
+    .then(() => console.log(`Added ${deptRes.dept_name} to the database`));
+    await presentFirstPrompt();
+}
+
+async function addRole() {
+    const { rows } = await db.searchAllDepartments();
+    let departments = rows;
+    const departmentChoices = departments.map(({ id, dept_name}) => ({
+        name: dept_name,
+        value: id,
+    }))
+    startSection(departmentChoices);
+    const res = await inquirer.prompt([
+        {
+            name: 'role_name',
+            message: 'What is the name of the new role?',
+
+        },
+        {
+            name: 'role_salary',
+            message: `What is the salary of this new role?`
+            
+        },
+        {
+            type: 'list',
+            name: 'role_dept',
+            message: 'What department does this role belong to?',
+            choices: departmentChoices,
+        },
+
+    ]); 
+    endSection(res);
+    await db.createRole(res)
+    .then(() => console.log(`Added ${role.role_name} to database`));
+    await presentFirstPrompt();
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // View all employees belonging to a department
 function viewEmployeesByDepartment() {
-    db.searchEmployeesByDepartment()
-    .then(({ rows})=> {
+    db.searchAllDepartments()
+    .then(({ rows })=> {
+        console.log("First promise after search ALl departments");
+        console.log(rows)
         let departments = rows;
-        const departmentChoices = departments.map(({ id, name }) => ({
-            name: name,
+        const departmentChoices = departments.map(({ id, dept_name }) => ({ // id and dept_name are the naming from schmea
+            name: dept_name,
             value: id,
         }));
-
+        console.log(departmentChoices);
         inquirer.prompt([
             {
                 type: 'list',
                 name: 'dept_Id',
                 message: 'Which department of employees do you want to see?',
                 choices: departmentChoices,
+                
             },
+            
         ])
-        .then((res) =>
-        db.searchEmployeesByDepartment(res.dept_id))
+        .then((res) => { // curly brackets to be able to console log 
+            startSection("Response to department choices")
+            console.log(res);
+            endSection("Response to department choices")
+            return db.searchEmployeesByDepartment(res.dept_Id)
+        })
         .then(({ rows }) => {
             let employees = rows;
+            console.log('Logging employees');
             console.table(employees);
         })
     
             .then(() => presentFirstPrompt());
-    
+            
     });
 }
+//async function to view employees by department 
+async function empByDept(){
+    const departmentData = await db.searchAllDepartments()
+    let departments = departmentData.rows;
+    const departmentChoices = departments.map(({ id, dept_name }) => ({ // id and dept_name are the naming from schmea
+        name: dept_name,
+        value: id,
+    }));
+    const {dept_Id} = await inquirer.prompt([
+        {
+            type: 'list',
+            name: 'dept_Id',
+            message: 'Which department of employees do you want to see?',
+            choices: departmentChoices,
+            
+        },
+    ])
+    const employeeData = await db.searchEmployeesByDepartment(dept_Id)
+    console.table(employeeData.rows)
+    presentFirstPrompt()
+}
+
 
 
 //initilize app
