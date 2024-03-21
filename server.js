@@ -4,6 +4,7 @@ const inquirer = require("inquirer");
 const db = require('./db');
 const { start } = require("repl");
 const { log } = require("console");
+const { title } = require("process");
 const app = express();
 //styling for CLI
 const logoCli = require("cli-logo"),
@@ -191,33 +192,137 @@ async function addRole() {
         name: dept_name,
         value: id,
     }))
-    startSection(departmentChoices);
     const res = await inquirer.prompt([
         {
-            name: 'role_name',
+            name: 'title',
             message: 'What is the name of the new role?',
 
         },
         {
-            name: 'role_salary',
+            name: 'salary',
             message: `What is the salary of this new role?`
             
         },
         {
             type: 'list',
-            name: 'role_dept',
+            name: 'dept_id',
             message: 'What department does this role belong to?',
             choices: departmentChoices,
         },
 
     ]); 
-    endSection(res);
+    
     await db.createRole(res)
-    .then(() => console.log(`Added ${role_name} to database`));
+    .then(() => console.log(`Added ${res.title} to database`));
     await presentFirstPrompt();
     
 }
 
+async function addEmployee() {
+    try {
+      const employeeDetails = await inquirer.prompt([
+        {
+          name: 'first_name',
+          message: "What is the employee's first name?",
+        },
+        {
+          name: 'last_name',
+          message: "What is the employee's last name?",
+        },
+      ]);
+  
+      const { first_name: firstName, last_name: lastName } = employeeDetails;
+  
+      const { rows: roles } = await db.searchAllRole();
+      const roleChoices = roles.map(({ id, title }) => ({
+        name: title,
+        value: id,
+      }));
+  
+      const roleResponse = await inquirer.prompt({
+        type: 'list',
+        name: 'roleId',
+        message: "What is the employee's role?",
+        choices: roleChoices,
+      });
+  
+      const roleId = roleResponse.roleId;
+  
+      const { rows: employees } = await db.searchAllEmployees();
+      const managerChoices = employees.map(
+        ({ id, first_name, last_name }) => ({
+          name: `${first_name} ${last_name}`,
+          value: id,
+        })
+      );
+      managerChoices.unshift({ name: 'None', value: null });
+  
+      const managerResponse = await inquirer.prompt({
+        type: 'list',
+        name: 'managerId',
+        message: "Who is the employee's manager?",
+        choices: managerChoices,
+      });
+  
+      const employee = {
+        manager_id: managerResponse.managerId,
+        role_id: roleId,
+        first_name: firstName,
+        last_name: lastName,
+      };
+  
+      await db.createEmployee(employee);
+  
+      console.log(`Added ${firstName} ${lastName} to the database`);
+      await presentFirstPrompt();
+    } catch (error) {
+      console.error('Error adding employee:', error);
+    }
+  }
+
+  async function updateEmployeeRole() {
+    try {
+      const { rows } = await db.searchAllEmployees();
+      let employees = rows;
+      startSection(employees);
+      const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
+        name: `${first_name} ${last_name}`,
+        value: id,
+      }));
+  
+      const { employeeId } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'employeeId',
+          message: "Which employee's role do you want to update?",
+          choices: employeeChoices,
+        },
+      ]);
+  
+      const { rows: roleRows } = await db.searchAllRole();
+      let roles = roleRows;
+      const roleChoices = roles.map(({ id, title }) => ({
+        name: title,
+        value: id,
+      }));
+  
+      const { roleId } = await inquirer.prompt([
+        {
+          type: 'list',
+          name: 'roleId',
+          message: 'Which role do you want to assign the selected employee?',
+          choices: roleChoices,
+        },
+      ]);
+  
+      await db.updateEmployeeRole(employeeId, roleId);
+      console.log("Updated employee's role");
+      presentFirstPrompt();
+    } catch (error) {
+      console.error('Error updating employee role:', error);
+    }
+  }
+  
 
 
 

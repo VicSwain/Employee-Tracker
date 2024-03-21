@@ -36,13 +36,30 @@ class DB {
   }
 
   createRole(role) {
-    const { role_name, role_salary, role_dept } = role;
+    const { title, salary, dept_id } = role;
     console.log(role);
     return this.query(
       'INSERT INTO role (title, salary, dept_id) VALUES ($1, $2, $3)',
-      [role_name, role_salary, role_dept]
+      [title, salary, dept_id]
     );
   }
+
+  // Create a new employee
+  createEmployee(employee) {
+    const { first_name, last_name, role_id, manager_id } = employee;
+    return this.query(
+      'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)',
+      [first_name, last_name, role_id, manager_id]
+    );
+  }
+
+  updateEmployeeRole(employeeId, roleId) {
+    return this.query('UPDATE employee SET role_id = $1 WHERE id = $2', [
+      roleId,
+      employeeId,
+    ]);
+  }
+
   
   
   
