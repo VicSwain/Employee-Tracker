@@ -26,7 +26,7 @@
   3. \i db/seeds.sql;
   4. \q;
   5. node index.js
-  6. [USAGE VIDEO](https://drive.google.com/drive/folders/1ljogQPoyg2pU562T0TxPrYwFhmU300Uc)
+  6. [USAGE VIDEO](https://drive.google.com/file/d/1-DnEeKJapIQrLL3D-r5HLvqaEaV9f0vq/view?usp=drive_link)
 
   
   ## Screenshots
