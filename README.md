@@ -1,35 +1,42 @@
-# Employee-Tracker
+  # Employee Tracker
 
-# Employee-Tracker
+  ## Description
+  This is a CLI app using nodeJS, JS, ExpressJS for functionality, and postgreSQL for the database. The user can view all departments, roles, and employees. The user may also add each of these to the database, as well as update an employee role, and view all employees by department. 
 
-## User Story
-AS A business owner
-I WANT to be able to view and manage the departments, roles, and employees in my company
-SO THAT I can organize and plan my business
+  ## Table of Contents
+  [Installation](#installation)
 
-## Acceptance Criteria
-GIVEN a command-line application that accepts user input
+  [Usage](#usage)
 
-WHEN I start the application
-THEN I am presented with the following options: view all departments, view all roles, view all employees, add a department, add a role, add an employee, and update an employee role
+  [License](#license)
 
-WHEN I choose to view all departments
-THEN I am presented with a formatted table showing department names and department ids
+  [Contributors](#contributors)
 
-WHEN I choose to view all roles
-THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
+  [Tests](#tests)
 
-WHEN I choose to view all employees
-THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
+  [Questions](#questions)
 
-WHEN I choose to add a department
-THEN I am prompted to enter the name of the department and that department is added to the database
 
-WHEN I choose to add a role
-THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
+  ## Installation
+  npm i
+  
+  ## Usage
+  1. psql -U postgres to log into postgresSQL to set up database;
+  2. \i db/schema.sql;
+  3. \i db/seeds.sql;
+  4. node index.js
 
-WHEN I choose to add an employee
-THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
+  ## Contributors
+  I worked with Alex Gonzalez as a tutor for a better understanding of this project
 
-WHEN I choose to update an employee role
-THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+  ## Tests
+  N/A
+
+  ## Questions
+  [GIT AT ME!](https://github.com/VicSwain)
+
+  [REACH ME](@huracanmusic2016@gmail.com)
+
+  ## License 
+  No license
+  

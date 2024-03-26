@@ -17,20 +17,13 @@ logoConfig = {
 };
 //initial app
 init();
-// functions for help with console.log 
-function startSection(name){
-    console.log(`================================${name} start =============================`)
-}
-function endSection(name){
-    console.log(`================================${name} end =============================`)
-}
 
 function init() {
     //print CLI logo
     logoCli.print(logoConfig);
     presentFirstPrompt();
 }
-
+// initial prompts for user to choose what operation they want to perform
 function presentFirstPrompt() {
     inquirer.prompt([
         {
@@ -47,16 +40,8 @@ function presentFirstPrompt() {
                     value: "VIEW_EMPLOYEES_BY_DEPARTMENT",
                 },
                 {
-                    name: "View all employees by manager",
-                    value: "VIEW_EMPLOYEES_BY_MANAGER",
-                },
-                {
                     name: "Add an employee",
                     value: "ADD_EMPLOYEE",
-                },
-                {
-                    name: "Delete an employee",
-                    value: "DELETE_EMPLOYEE",
                 },
                 {
                     name: "Update an employee role",
@@ -71,29 +56,12 @@ function presentFirstPrompt() {
                     value: "ADD_DEPARTMENT",
                 },
                 {
-                    name: "View employees by department",
-                    value: "VIEW_EMPLOYEE_DEPARTMENT",
-                },
-                {
-                    name: "Delete department",
-                    value: "DELETE_DEPARTMENT",
-                },
-
-                {
                     name: "View all roles",
                     value: "VIEW_ROLE",
                 },
                 {
                     name: "Add a role",
                     value: "ADD_ROLE",
-                },
-                {
-                    name: "Delete a role",
-                    value: "DELETE_ROLE",
-                },
-                {
-                    name: "Total utilized budget by department",
-                    value: "VIEW_TOTAL_UTILIZED_BUDGET_BY_DEPARTMENT",
                 },
                 {
                     name: "Quit",
@@ -103,7 +71,7 @@ function presentFirstPrompt() {
         },
     ]).then((res) => {
         let choice = res.choice;
-        //switch statement to call repsective function based on user input
+//switch statement to call repsective function based on user input
         switch (choice) {
             case 'VIEW_EMPLOYEES':
                 viewEmployees();
@@ -111,13 +79,8 @@ function presentFirstPrompt() {
             case 'VIEW_EMPLOYEES_BY_DEPARTMENT':
                 viewEmployeesByDepartment();
                 break;
-            case 'VIEW_EMPLOYEES_BY_MANAGER':
-                viewEmployeesByManager();
             case 'ADD_EMPLOYEE':
                 addEmployee();
-                break;
-            case 'DELETE_EMPLOYEE':
-                deleteEmployee();
                 break;
             case 'UPDATE_EMPLOYEE_ROLE':
                 updateEmployeeRole();
@@ -128,20 +91,11 @@ function presentFirstPrompt() {
             case 'ADD_DEPARTMENT':
                 addDept();
                 break;
-            case 'DELETE_DEPARTMENT':
-                deleteDepartment();
-                break;
             case 'VIEW_ROLE':
                  viewAllRole();
                 break;
             case 'ADD_ROLE':
                 addRole();
-                break;
-            case 'DELETE_ROLE':
-                deleteRole();
-                break;
-            case 'VIEW_TOTAL_UTILIZED_BUDGET_BY_DEPARTMENT':
-                viewTotalUtilizedBudgetByDepartment();
                 break;
             case 'QUIT':
                 quit();
@@ -171,7 +125,7 @@ async function viewAllRole() {
     console.table(roles)
     presentFirstPrompt()
 }
-
+//async function to add a department 
 async function addDept() {
      const res = await inquirer.prompt([
         {
@@ -184,7 +138,7 @@ async function addDept() {
     .then(() => console.log(`Added ${deptRes.dept_name} to the database`));
     await presentFirstPrompt();
 }
-
+// async function to add a role with prompts to fill in all need information for the role
 async function addRole() {
     const { rows } = await db.searchAllDepartments();
     let departments = rows;
@@ -217,7 +171,7 @@ async function addRole() {
     await presentFirstPrompt();
     
 }
-
+// async function to add an employee
 async function addEmployee() {
     try {
       const employeeDetails = await inquirer.prompt([
@@ -279,12 +233,11 @@ async function addEmployee() {
       console.error('Error adding employee:', error);
     }
   }
-
+// async function to update an employee role
   async function updateEmployeeRole() {
     try {
       const { rows } = await db.searchAllEmployees();
       let employees = rows;
-      startSection(employees);
       const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
         name: `${first_name} ${last_name}`,
         value: id,
@@ -322,97 +275,18 @@ async function addEmployee() {
       console.error('Error updating employee role:', error);
     }
   }
-  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// View all employees belonging to a department
-function viewEmployeesByDepartment() {
-    db.searchAllDepartments()
-    .then(({ rows })=> {
-        console.log("First promise after search ALl departments");
-        console.log(rows)
-        let departments = rows;
-        const departmentChoices = departments.map(({ id, dept_name }) => ({ // id and dept_name are the naming from schmea
-            name: dept_name,
-            value: id,
-        }));
-        console.log(departmentChoices);
-        inquirer.prompt([
-            {
-                type: 'list',
-                name: 'dept_Id',
-                message: 'Which department of employees do you want to see?',
-                choices: departmentChoices,
-                
-            },
-            
-        ])
-        .then((res) => { // curly brackets to be able to console log 
-            startSection("Response to department choices")
-            console.log(res);
-            endSection("Response to department choices")
-            return db.searchEmployeesByDepartment(res.dept_Id)
-        })
-        .then(({ rows }) => {
-            let employees = rows;
-            console.log('Logging employees');
-            console.table(employees);
-        })
-    
-            .then(() => presentFirstPrompt());
-            
-    });
+//   exit the app
+function quit() {
+    console.log("Until I'm needed again!");
+    process.exit();
 }
+
 //async function to view employees by department 
-async function empByDept(){
+async function viewEmployeesByDepartment() {
     const departmentData = await db.searchAllDepartments()
     let departments = departmentData.rows;
-    const departmentChoices = departments.map(({ id, dept_name }) => ({ // id and dept_name are the naming from schmea
+    const departmentChoices = departments.map(({ id, dept_name }) => ({
         name: dept_name,
         value: id,
     }));
@@ -432,6 +306,5 @@ async function empByDept(){
 
 
 
-//initilize app
 
 
