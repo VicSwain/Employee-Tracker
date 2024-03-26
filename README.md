@@ -24,19 +24,29 @@
   1. psql -U postgres to log into postgresSQL to set up database;
   2. \i db/schema.sql;
   3. \i db/seeds.sql;
-  4. node index.js
+  4. \q;
+  5. node index.js
+  6. [USAGE VIDEO](https://drive.google.com/drive/folders/1ljogQPoyg2pU562T0TxPrYwFhmU300Uc)
 
-  ## Contributors
+  
+  ## Screenshots
+  ![CLI Screenshot](./assets/EmployeePic1.png)
+  ![CLI Screenshot](./assets/EmployeePic2.png)
+  ![CLI Screenshot](./assets/EmployeePic3.png)
+  ![CLI Screenshot](./assets/EmployeePic4.png)
+  ![CLI Screenshot](./assets/EmployeePic5.png)
+  ![CLI Screenshot](./assets/EmployeePic6.png)
+  
+  ### Contributors
   I worked with Alex Gonzalez as a tutor for a better understanding of this project
 
-  ## Tests
-  N/A
-
-  ## Questions
+  ### Questions
   [GIT AT ME!](https://github.com/VicSwain)
 
   [REACH ME](@huracanmusic2016@gmail.com)
 
-  ## License 
+  #### License 
   No license
   
+  #### Tests
+  N/A
